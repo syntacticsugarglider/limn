@@ -1,0 +1,29 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+        "max-line-length": {
+            "options": [
+                120
+            ]
+        },
+        "no-console": true,
+        "no-unbound-method": true,
+        "no-conditional-assignment": true,
+        "no-sparse-arrays": true,
+        "restrict-plus-operands": true,
+        "no-invalid-template-strings": true,
+        "no-boolean-literal-compare": true,
+        "prefer-const": true,
+        "no-var-keyword": true,
+        "no-eval": true,
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "no-for-in": true
+    }
+}
