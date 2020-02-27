@@ -5,6 +5,7 @@ class ShaderWrapper {
     gl: WebGLRenderingContext;
     program: WebGLProgram;
     shader: WebGLShader;
+
     resUniform: WebGLUniformLocation;
     timeUniform: WebGLUniformLocation;
     resolution: [number, number];
@@ -31,11 +32,11 @@ class ShaderWrapper {
         this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-        const frag = this.gl.createShader(this.gl.FRAGMENT_SHADER);
-        this.gl.shaderSource(frag, rawShader);
-        this.gl.compileShader(frag);
-        if (!this.gl.getShaderParameter(frag, this.gl.COMPILE_STATUS)) {
-            throw this.gl.getShaderInfoLog(frag);
+        this.shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+        this.gl.shaderSource(this.shader, rawShader);
+        this.gl.compileShader(this.shader);
+        if (!this.gl.getShaderParameter(this.shader, this.gl.COMPILE_STATUS)) {
+            throw this.gl.getShaderInfoLog(this.shader);
         }
 
         const vert = this.gl.createShader(this.gl.VERTEX_SHADER);
@@ -51,7 +52,7 @@ class ShaderWrapper {
 
         this.program = this.gl.createProgram();
         this.gl.attachShader(this.program, vert);
-        this.gl.attachShader(this.program, frag);
+        this.gl.attachShader(this.program, this.shader);
         this.gl.linkProgram(this.program);
 
         const vbo = this.gl.createBuffer();
@@ -90,5 +91,21 @@ class ShaderWrapper {
         this.gl.uniform1f(this.timeUniform, new Date().getSeconds());
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
         window.requestAnimationFrame(this.draw);
+    }
+
+    updateShader(newShaderText: string) {
+        this.gl.detachShader(this.program, this.shader);
+        const newShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+        this.gl.shaderSource(newShader, newShaderText);
+        this.gl.compileShader(newShader);
+        if (!this.gl.getShaderParameter(newShader, this.gl.COMPILE_STATUS)) {
+            window.alert(this.gl.getShaderInfoLog(newShader));
+            return;
+        }
+        this.gl.attachShader(this.program, newShader);
+        this.gl.linkProgram(this.program);
+        this.resUniform = this.gl.getUniformLocation(this.program, 'res');
+        this.timeUniform = this.gl.getUniformLocation(this.program, 'time');
+        this.shader = newShader;
     }
 }
