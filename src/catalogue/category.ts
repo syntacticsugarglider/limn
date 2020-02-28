@@ -15,6 +15,8 @@ export default class Category {
                 items.appendChild(challengeElement);
                 if (challenge.active) {
                     element.querySelector('.num')!.textContent = `${idx}${challenge.index}`;
+                    element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
+                    element.querySelector('.description')!.textContent = challenge.short_description;
                     challengeElement.outerHTML = `<div class="item c active">${challenge.index}&nbsp;<span class="info">in progress</span></div>`;
                 } else {
                     challengeElement.outerHTML = `<div class="item">${challenge.index} <div class="check"></div></div>`;
