@@ -63,7 +63,7 @@
         top: -0.25em;
         font-weight: bold;
         position: absolute;
-        opacity: 0.2;
+        opacity: 0.1;
     }
 
     .catalogue .description {
@@ -123,6 +123,15 @@
         text-transform: uppercase;
         font-size: 0.9em;
     }
+
+    .catalogue .n {
+        font-weight: bold;
+    }
+
+    .catalogue .sep {
+        display: inline-block;
+        width: 0px;
+    }
 </style>
 
 <div class="catalogue container">
@@ -133,8 +142,11 @@
     </div>
     <div class="challenges">
         <div class="challenge">
-            <div class="category">Basic Primitives</div>
-            <div class="title wrapper"><span class="num">1</span>
+            <div class="category">
+                <span class="n">1</span>
+                <div class="sep"></div>Basic Primitives
+            </div>
+            <div class="title wrapper"><span class="num">1E</span>
                 <span class="title">The Fragment Shader</span>
             </div>
             <div class="description">
@@ -142,15 +154,15 @@
                 and therefore the locus of GPU-driven procedural art.
             </div>
             <div class="items">
-                <div class="item">1 <div class="check"></div>
+                <div class="item">A <div class="check"></div>
                 </div>
-                <div class="item">2 <div class="check"></div>
+                <div class="item">B <div class="check"></div>
                 </div>
-                <div class="item">3 <div class="check"></div>
+                <div class="item">C <div class="check"></div>
                 </div>
-                <div class="item">4 <div class="check"></div>
+                <div class="item">D <div class="check"></div>
                 </div>
-                <div class="item c">5&nbsp;<span class="info">in progress</span></div>
+                <div class="item c">E&nbsp;<span class="info">in progress</span></div>
             </div>
         </div>
         <div class="unlock challenge">
