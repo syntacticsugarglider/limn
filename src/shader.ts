@@ -1,45 +1,45 @@
 const SAMPLE_RATIO = 2;
 
 class ShaderWrapper {
-    canvas: HTMLCanvasElement;
-    gl: WebGLRenderingContext;
-    program: WebGLProgram;
-    shader: WebGLShader;
+    public canvas: HTMLCanvasElement;
+    public gl: WebGLRenderingContext;
+    public program: WebGLProgram;
+    public shader: WebGLShader;
 
-    resUniform: WebGLUniformLocation;
-    timeUniform: WebGLUniformLocation;
-    resolution: [number, number];
+    public resUniform: WebGLUniformLocation;
+    public timeUniform: WebGLUniformLocation;
+    public resolution: [number, number];
 
     constructor(canvas: HTMLCanvasElement, rawShader: string) {
         this.canvas = canvas;
-        const resolution = canvas.getBoundingClientRect()
+        const resolution = canvas.getBoundingClientRect();
         this.resolution = [resolution.width, resolution.height];
-        
+
         this.canvas.width = this.resolution[0] * SAMPLE_RATIO;
         this.canvas.height = this.resolution[1] * SAMPLE_RATIO;
         window.addEventListener('resize', (_) => {
-            const resolution = canvas.getBoundingClientRect()
-            this.resolution = [resolution.width, resolution.height];
-            this.canvas.width = resolution.width * SAMPLE_RATIO;
-            this.canvas.height = resolution.height * SAMPLE_RATIO;
-        })
+            const newResolution = canvas.getBoundingClientRect();
+            this.resolution = [newResolution.width, newResolution.height];
+            this.canvas.width = newResolution.width * SAMPLE_RATIO;
+            this.canvas.height = newResolution.height * SAMPLE_RATIO;
+        });
 
-        this.gl = canvas.getContext('webgl');
+        this.gl = canvas.getContext('webgl')!;
         if (this.gl == null) {
-            throw 'Could not initialize webgl context';
+            throw new Error('Could not initialize webgl context');
         }
-        
+
         this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-        this.shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+        this.shader = this.gl.createShader(this.gl.FRAGMENT_SHADER)!;
         this.gl.shaderSource(this.shader, rawShader);
         this.gl.compileShader(this.shader);
         if (!this.gl.getShaderParameter(this.shader, this.gl.COMPILE_STATUS)) {
             throw this.gl.getShaderInfoLog(this.shader);
         }
 
-        const vert = this.gl.createShader(this.gl.VERTEX_SHADER);
+        const vert = this.gl.createShader(this.gl.VERTEX_SHADER)!;
         this.gl.shaderSource(vert, `#version 100
         attribute vec4 aVertexPosition;
         void main() {
@@ -50,7 +50,7 @@ class ShaderWrapper {
             throw this.gl.getShaderInfoLog(vert);
         }
 
-        this.program = this.gl.createProgram();
+        this.program = this.gl.createProgram()!;
         this.gl.attachShader(this.program, vert);
         this.gl.attachShader(this.program, this.shader);
         this.gl.linkProgram(this.program);
@@ -58,44 +58,44 @@ class ShaderWrapper {
         const vbo = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
         const vertices = new Uint8Array([
-          1,
-          -1,
-          0,
-          1,
-          1,
-          0,
-          -1,
-          -1,
-          0,
-          -1,
-          1,
-          0
+            1,
+            -1,
+            0,
+            1,
+            1,
+            0,
+            -1,
+            -1,
+            0,
+            -1,
+            1,
+            0,
         ]);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
 
         const loc = this.gl.getAttribLocation(this.program, 'aVertexPosition');
         this.gl.vertexAttribPointer(loc, 3, this.gl.FLOAT, false, 0, 0);
         this.gl.enableVertexAttribArray(loc);
-        this.resUniform = this.gl.getUniformLocation(this.program, 'res');
-        this.timeUniform = this.gl.getUniformLocation(this.program, 'time');
+        this.resUniform = this.gl.getUniformLocation(this.program, 'res')!;
+        this.timeUniform = this.gl.getUniformLocation(this.program, 'time')!;
 
         this.draw();
     }
 
-    draw() {
-        const viewport_size = [this.resolution[0] * SAMPLE_RATIO, this.resolution[1] * SAMPLE_RATIO];
-        this.gl.viewport(0, 0, viewport_size[0], viewport_size[1]);
+    public draw() {
+        const viewportSize = [this.resolution[0] * SAMPLE_RATIO, this.resolution[1] * SAMPLE_RATIO];
+        this.gl.viewport(0, 0, viewportSize[0], viewportSize[1]);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.useProgram(this.program);
-        this.gl.uniform2f(this.resUniform, viewport_size[0], viewport_size[1]);
+        this.gl.uniform2f(this.resUniform, viewportSize[0], viewportSize[1]);
         this.gl.uniform1f(this.timeUniform, new Date().getSeconds());
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-        window.requestAnimationFrame(this.draw);
+        window.requestAnimationFrame(this.draw.bind(this));
     }
 
-    updateShader(newShaderText: string) {
+    public updateShader(newShaderText: string) {
         this.gl.detachShader(this.program, this.shader);
-        const newShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+        const newShader = this.gl.createShader(this.gl.FRAGMENT_SHADER)!;
         this.gl.shaderSource(newShader, newShaderText);
         this.gl.compileShader(newShader);
         if (!this.gl.getShaderParameter(newShader, this.gl.COMPILE_STATUS)) {
@@ -104,8 +104,8 @@ class ShaderWrapper {
         }
         this.gl.attachShader(this.program, newShader);
         this.gl.linkProgram(this.program);
-        this.resUniform = this.gl.getUniformLocation(this.program, 'res');
-        this.timeUniform = this.gl.getUniformLocation(this.program, 'time');
+        this.resUniform = this.gl.getUniformLocation(this.program, 'res')!;
+        this.timeUniform = this.gl.getUniformLocation(this.program, 'time')!;
         this.shader = newShader;
     }
 }
