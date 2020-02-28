@@ -1,4 +1,6 @@
 const path = require('path');
+const WorkboxPlugin = require('workbox-webpack-plugin');
+
 
 module.exports = {
     entry: './index.ts',
@@ -24,6 +26,10 @@ module.exports = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
+    plugins: [new WorkboxPlugin.GenerateSW({
+        clientsClaim: true,
+        skipWaiting: true,
+    })],
     mode: "development",
     devServer: {
         contentBase: path.join(__dirname, 'dist'),
