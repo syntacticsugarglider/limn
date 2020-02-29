@@ -14,19 +14,21 @@ export default class Category {
                 const challengeElement = document.createElement('div');
                 items.appendChild(challengeElement);
                 if (challenge.active) {
-                    element.querySelector('.num')!.textContent = `${idx}${challenge.index}`;
+                    element.querySelector('.num')!.innerHTML = `${idx}<div class="nanim">${challenge.index}</div>`;
                     element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
                     element.querySelector('.description')!.textContent = challenge.short_description;
                     challengeElement.innerHTML = `<div class="item c active">${challenge.index}&nbsp;<span class="info">in progress</span></div>`;
                 } else {
                     challengeElement.innerHTML = `<div class="item">${challenge.index} <div class="check"></div></div>`;
                 }
-                challengeElement.addEventListener('mouseover', () => {
-                    element.querySelector('.active')?.classList.remove('active');
-                    challengeElement.children[0].classList.add('active');
-                    element.querySelector('.num')!.textContent = `${idx}${challenge.index}`;
-                    element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
-                    element.querySelector('.description')!.textContent = challenge.short_description;
+                challengeElement.addEventListener('mouseenter', () => {
+                    if (!challengeElement.children[0].classList.contains('active')) {
+                        element.querySelector('.active')?.classList.remove('active');
+                        challengeElement.children[0].classList.add('active');
+                        element.querySelector('.num')!.innerHTML = `${idx}<div class="nanim">${challenge.index}</div>`;
+                        element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
+                        element.querySelector('.description')!.textContent = challenge.short_description;
+                    }
                 });
             }
         }

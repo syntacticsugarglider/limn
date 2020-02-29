@@ -129,8 +129,29 @@
         width: 0px;
     }
 
+    .catalogue .item:active {
+        opacity: 0.8;
+    }
+
     .catalogue .item.active {
         box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    }
+
+    .catalogue .nanim {
+        animation: fade-in-down 0.3s cubic-bezier(.25, .8, .25, 1);
+        display: inline-block;
+    }
+
+    @keyframes fade-in-down {
+        0% {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0px);
+        }
     }
 </style>
 
