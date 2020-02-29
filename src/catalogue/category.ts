@@ -17,10 +17,17 @@ export default class Category {
                     element.querySelector('.num')!.textContent = `${idx}${challenge.index}`;
                     element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
                     element.querySelector('.description')!.textContent = challenge.short_description;
-                    challengeElement.outerHTML = `<div class="item c active">${challenge.index}&nbsp;<span class="info">in progress</span></div>`;
+                    challengeElement.innerHTML = `<div class="item c active">${challenge.index}&nbsp;<span class="info">in progress</span></div>`;
                 } else {
-                    challengeElement.outerHTML = `<div class="item">${challenge.index} <div class="check"></div></div>`;
+                    challengeElement.innerHTML = `<div class="item">${challenge.index} <div class="check"></div></div>`;
                 }
+                challengeElement.addEventListener('mouseover', () => {
+                    element.querySelector('.active')?.classList.remove('active');
+                    challengeElement.children[0].classList.add('active');
+                    element.querySelector('.num')!.textContent = `${idx}${challenge.index}`;
+                    element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
+                    element.querySelector('.description')!.textContent = challenge.short_description;
+                });
             }
         }
     }
