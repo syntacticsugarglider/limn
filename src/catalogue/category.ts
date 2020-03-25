@@ -49,7 +49,6 @@ export default class Category {
                 testDescription.style.left = '-100px';
                 element.appendChild(testDescription);
                 const height = Math.round(testDescription.getBoundingClientRect().height);
-                console.log(`height ${height}`)
                 if (height > maxHeight) {
                     maxHeight = height;
                 }

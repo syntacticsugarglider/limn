@@ -1,7 +1,6 @@
-import { IChallenge } from '../challenges';
 import { ILexicon } from '../lexicon';
 import ShaderWrapper from '../shader';
-import template from './category.html';
+import template from './shader_port.html';
 import defaultShader from './default_shader.glsl';
 import templateShader from './shader_template.glsl';
 
