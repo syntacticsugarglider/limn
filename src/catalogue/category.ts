@@ -55,5 +55,6 @@ export default class Category {
             realDescription.style.height = `${maxHeight}px`;
         };
         window.addEventListener('resize', resizeHeight);
+        setTimeout(resizeHeight, 0);
     }
 }
