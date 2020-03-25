@@ -2,6 +2,7 @@ import { ICategory } from './challenges';
 
 const content: ICategory[] = [
     {
+        available: true,
         challenges: [{
             active: true,
             available: true,
@@ -12,6 +13,7 @@ const content: ICategory[] = [
         name: 'Basic primitives',
     },
     {
+        available: true,
         challenges: [{
             active: false,
             available: true,

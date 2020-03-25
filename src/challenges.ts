@@ -8,5 +8,6 @@ export interface IChallenge {
 
 export interface ICategory {
     name: string;
+    available: boolean;
     challenges: IChallenge[];
 }

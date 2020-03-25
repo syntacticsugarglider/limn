@@ -10,6 +10,9 @@ export default class Category {
         element.querySelector('.name')!.textContent = category.name;
         const items = element.querySelector('.items')!;
         for (const challenge of category.challenges) {
+            if (!challenge.available) {
+                continue;
+            }
             if (challenge.available) {
                 const challengeElement = document.createElement('div');
                 items.appendChild(challengeElement);
