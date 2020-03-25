@@ -12,17 +12,14 @@ export default class ShaderWrapper {
 
     constructor(canvas: HTMLCanvasElement, rawShader: string) {
         this.canvas = canvas;
-        const resolution = canvas.getBoundingClientRect();
-        this.resolution = [resolution.width, resolution.height];
-
-        this.canvas.width = this.resolution[0] * SAMPLE_RATIO;
-        this.canvas.height = this.resolution[1] * SAMPLE_RATIO;
-        window.addEventListener('resize', (_) => {
-            const newResolution = canvas.getBoundingClientRect();
+        const updateResolution = () => {
+            const newResolution = this.canvas.getBoundingClientRect();
             this.resolution = [newResolution.width, newResolution.height];
             this.canvas.width = newResolution.width * SAMPLE_RATIO;
             this.canvas.height = newResolution.height * SAMPLE_RATIO;
-        });
+        };
+        updateResolution();
+        window.addEventListener('resize', updateResolution);
 
         this.gl = canvas.getContext('webgl')!;
         if (this.gl == null) {

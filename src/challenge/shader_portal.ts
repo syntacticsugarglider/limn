@@ -9,14 +9,6 @@ export default class ShaderPortal {
         const element = document.createElement('div');
         parent.appendChild(element);
         element.innerHTML = template;
-        const shader = new ShaderWrapper(element.querySelector('.renderer')! as HTMLCanvasElement, defaultShader);
-        const shaderEntry = element.querySelector('.shaderentry')! as HTMLTextAreaElement;
-        const userTemplateShader: string = templateShader.replace('LEXICON GOES HERE', lexicon.procedures.map((p) => {
-            return p.body;
-        }).join(' '));
-        shaderEntry.addEventListener('change', () => {
-            shader.updateShader(userTemplateShader.replace('STUFF GOES HERE', shaderEntry.value));
-        });
         const lexiconElement = element.querySelector('.lexicon')!;
         for (const procedure of lexicon.procedures) {
             const procedureElement = document.createElement('div');
@@ -31,5 +23,17 @@ export default class ShaderPortal {
             procedureElement.appendChild(procedureDescription);
             procedureDescription.textContent = procedure.description;
         }
+        setTimeout(() => {
+            const shader = new ShaderWrapper(element.querySelector('.renderer')! as HTMLCanvasElement, defaultShader);
+            const shaderEntry = element.querySelector('.shaderentry')! as HTMLTextAreaElement;
+            const userTemplateShader: string = templateShader.replace('LEXICON GOES HERE',
+                lexicon.procedures.map((p) => {
+                    return p.body;
+                }).join(' ')
+            );
+            shaderEntry.addEventListener('change', () => {
+                shader.updateShader(userTemplateShader.replace('STUFF GOES HERE', shaderEntry.value));
+            });
+        }, 0);
     }
 }
