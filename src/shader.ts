@@ -1,6 +1,6 @@
 const SAMPLE_RATIO = 2;
 
-class ShaderWrapper {
+export default class ShaderWrapper {
     public canvas: HTMLCanvasElement;
     public gl: WebGLRenderingContext;
     public program: WebGLProgram;
