@@ -8,7 +8,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.html$/i,
+                test: /\.(html|glsl)$/i,
                 loader: 'raw-loader',
                 exclude: /index\.html/
             },
