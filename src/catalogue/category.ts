@@ -32,5 +32,28 @@ export default class Category {
                 });
             }
         }
+        const resizeHeight = () => {
+            const realDescription = element.querySelector('.description:not(test)')! as HTMLDivElement;
+            let maxHeight = 0;
+            for (const challenge of category.challenges) {
+                const testDescription = document.createElement('div');
+                testDescription.classList.add('description');
+                testDescription.classList.add('test');
+                testDescription.textContent = challenge.short_description;
+                testDescription.style.width = `${Math.round(realDescription.getBoundingClientRect().width)}px`;
+                testDescription.style.position = 'absolute';
+                testDescription.style.top = '-100px';
+                testDescription.style.left = '-100px';
+                element.appendChild(testDescription);
+                const height = Math.round(testDescription.getBoundingClientRect().height);
+                console.log(`height ${height}`)
+                if (height > maxHeight) {
+                    maxHeight = height;
+                }
+                testDescription.remove();
+            }
+            realDescription.style.height = `${maxHeight}px`;
+        };
+        window.addEventListener('resize', resizeHeight);
     }
 }
