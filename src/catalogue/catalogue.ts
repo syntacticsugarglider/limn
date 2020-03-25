@@ -12,8 +12,10 @@ export default class Catalogue extends Page {
         const challenges = element.querySelector('.challenges')!;
         let i = 1;
         for (const category of categories) {
-            const _ = new Category(category, challenges, i);
-            i++;
+            if (category.available) {
+                const _ = new Category(category, challenges, i, app);
+                i++;
+            }
         }
         super(element);
     }

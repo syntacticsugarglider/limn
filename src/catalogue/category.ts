@@ -1,8 +1,9 @@
 import { ICategory } from '../challenges';
 import template from './category.html';
+import App from '../app';
 
 export default class Category {
-    constructor(category: ICategory, parent: Element, idx: number) {
+    constructor(category: ICategory, parent: Element, idx: number, app: App) {
         const element = document.createElement('div');
         parent.appendChild(element);
         element.innerHTML = template;
@@ -10,9 +11,6 @@ export default class Category {
         element.querySelector('.name')!.textContent = category.name;
         const items = element.querySelector('.items')!;
         for (const challenge of category.challenges) {
-            if (!challenge.available) {
-                continue;
-            }
             if (challenge.available) {
                 const challengeElement = document.createElement('div');
                 items.appendChild(challengeElement);
@@ -32,6 +30,10 @@ export default class Category {
                         element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
                         element.querySelector('.description')!.textContent = challenge.short_description;
                     }
+                });
+                challengeElement.addEventListener('click', () => {
+                    localStorage.setItem('challenge', challenge.name);
+                    app.transition('challenge');
                 });
             }
         }

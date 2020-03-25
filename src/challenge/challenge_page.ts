@@ -9,7 +9,7 @@ export default class ChallengePage extends Page {
     constructor(app: App, lexicon: ILexicon, challenge: IChallenge) {
         const element = document.createElement('div');
         element.innerHTML = template;
-        const _ = new ShaderPortal(lexicon, element);
+        const _ = new ShaderPortal(lexicon, element.querySelector('.challenge')!);
         super(element);
     }
 }
