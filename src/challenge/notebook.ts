@@ -87,15 +87,17 @@ export default class Notebook {
         }
 
         const cachedRevealed = localStorage.getItem(`${this.challenge.name}-revealed`);
-        if (cachedRevealed != null) {
-            setTimeout(() => {
+        setTimeout(() => {
+            if (cachedRevealed != null) {
+
                 for (let i = 0; i < Number(cachedRevealed); ++i) {
                     this.revealNext();
                 }
-            }, 0);
-        } else {
-            this.revealNext();
-        }
+
+            } else {
+                this.revealNext();
+            }
+        }, 0);
         parentElement.appendChild(element);
     }
 
@@ -109,7 +111,7 @@ export default class Notebook {
             )
             .replace(
                 'STUFF GOES HERE', embed
-            )
+            );
     }
 
     public revealNext() {
