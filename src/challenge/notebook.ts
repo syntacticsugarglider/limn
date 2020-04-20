@@ -1,19 +1,19 @@
 import template from './notebook.html';
 import { ILexicon } from '../lexicon';
-import { INotebookSection } from '../challenges';
+import { IChallenge, INotebookSection } from '../challenges';
 import ShaderWrapper from '../shader';
 import defaultShader from './glsl/default_shader.glsl';
 import shaderTemplate from './glsl/shader_template.glsl';
 
 // I predict izzy will not like this
 export default class Notebook {
-    sections: INotebookSection[][];
+    challenge: IChallenge;
     shaders: ShaderWrapper[][];
     sectionElements: HTMLElement[];
     revealedSections: number;
 
-    constructor(parentElement: Element, sections: INotebookSection[][], lexicon: ILexicon) {
-        this.sections = sections;
+    constructor(parentElement: Element, challenge: IChallenge, lexicon: ILexicon) {
+        this.challenge = challenge;
         this.sectionElements = [];
         this.shaders = [];
         this.revealedSections = 0;
@@ -31,7 +31,7 @@ export default class Notebook {
         inputTemplate.remove();
 
 
-        for (const section of sections) {
+        for (const section of this.challenge.notebook) {
             const sectionElement = document.createElement('div')!;
             const shaders = [];
             sectionElement.classList.add('hidden');
@@ -45,22 +45,32 @@ export default class Notebook {
                     case 'input':
                         const input = inputTemplate.cloneNode(true)! as HTMLElement;
                         const codeEditor = input.querySelector('textarea')!;
-                        codeEditor.value = part.default_frag;
-                        const shader =
-                            new ShaderWrapper(input.querySelector('canvas')! as HTMLCanvasElement, defaultShader);
+                        // I know izzy won't like this scheme
+                        const cachedFragKey = `${challenge.name}-${this.challenge.notebook.indexOf(section)}-${section.indexOf(part)}`;
+                        const cachedFrag = localStorage.getItem(cachedFragKey);
+                        let startingShader: string;
+                        if (cachedFrag != null && cachedFrag !== '') {
+                            codeEditor.value = cachedFrag;
+                            startingShader = this.templateEmbed(lexicon, cachedFrag);
+                        } else {
+                            codeEditor.value = part.default_frag;
+                            startingShader = defaultShader;
+                        }
+                        codeEditor.addEventListener('change', () =>
+                            localStorage.setItem(cachedFragKey, codeEditor.value));
+
+                        let shader: ShaderWrapper;
+                        try {
+                            shader =
+                                new ShaderWrapper(input.querySelector('canvas')! as HTMLCanvasElement, startingShader);
+                        } catch (e) {
+                            shader =
+                                new ShaderWrapper(input.querySelector('canvas')! as HTMLCanvasElement, defaultShader);
+                        }
                         shaders.push(shader);
                         input.querySelector('.compile')!.addEventListener('click', () =>
                             shader.updateShader(
-                                shaderTemplate
-                                    .replace(
-                                        'LEXICON GOES HERE', lexicon.procedures.map((proc) => proc.body).reduce(
-                                            (prev, current) => prev + '\n' + current,
-                                            ''
-                                        )
-                                    )
-                                    .replace(
-                                        'STUFF GOES HERE', codeEditor.value
-                                    )
+                                this.templateEmbed(lexicon, codeEditor.value)
                             )
                         );
                         sectionElement.appendChild(input);
@@ -71,8 +81,31 @@ export default class Notebook {
             this.shaders.push(shaders);
             this.sectionElements.push(sectionElement);
         }
-        this.revealNext();
+
+        const cachedRevealed = localStorage.getItem(`${this.challenge.name}-revealed`);
+        if (cachedRevealed != null) {
+            setTimeout(() => {
+                for (let i = 0; i < Number(cachedRevealed); ++i) {
+                    this.revealNext();
+                }
+            }, 0);
+        } else {
+            this.revealNext();
+        }
         parentElement.appendChild(element);
+    }
+
+    public templateEmbed(lexicon: ILexicon, embed: string) {
+        return shaderTemplate
+            .replace(
+                'LEXICON GOES HERE', lexicon.procedures.map((proc) => proc.body).reduce(
+                    (prev, current) => prev + '\n' + current,
+                    ''
+                )
+            )
+            .replace(
+                'STUFF GOES HERE', embed
+            )
     }
 
     public revealNext() {
@@ -82,6 +115,7 @@ export default class Notebook {
         this.sectionElements[this.revealedSections].classList.remove('hidden');
         this.shaders[this.revealedSections].forEach((s) => s.callonload());
         ++this.revealedSections;
+        localStorage.setItem(`${this.challenge.name}-revealed`, this.revealedSections.toString());
         return true;
     }
 }
