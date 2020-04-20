@@ -86,15 +86,9 @@ export default class Notebook {
             this.sectionElements.push(sectionElement);
         }
 
-        const cachedRevealed = localStorage.getItem(`${this.challenge.name}-revealed`);
+        const cachedRevealed = localStorage.getItem(`${this.challenge.name}-revealed`) ?? '1';
         setTimeout(() => {
-            if (cachedRevealed != null) {
-
-                for (let i = 0; i < Number(cachedRevealed); ++i) {
-                    this.revealNext();
-                }
-
-            } else {
+            for (let i = 0; i < Number(cachedRevealed); ++i) {
                 this.revealNext();
             }
         }, 0);
