@@ -1,4 +1,6 @@
-import template from './notebook.html';
+import template from './templates/notebook.html';
+import inputTemplate from './templates/notebook_input.html';
+import textTemplate from './templates/notebook_text.html';
 import { ILexicon } from '../lexicon';
 import { IChallenge, INotebookSection } from '../challenges';
 import ShaderWrapper from '../shader';
@@ -25,26 +27,20 @@ export default class Notebook {
 
         element.querySelector('.revealnext')!.addEventListener('click', () => this.revealNext());
 
-        const textTemplate = element.querySelector('.text')!;
-        textTemplate.remove();
-        const inputTemplate = element.querySelector('.input')!;
-        inputTemplate.remove();
-
-
         for (const section of this.challenge.notebook) {
             const sectionElement = document.createElement('div')!;
             const shaders = [];
             sectionElement.classList.add('hidden');
             for (const part of section) {
+                const partElement = document.createElement('div')!;
                 switch (part.type) {
                     case 'text':
-                        const text = textTemplate.cloneNode(true)! as HTMLElement;
-                        text.textContent = part.text;
-                        sectionElement.appendChild(text);
+                        partElement.innerHTML = textTemplate;
+                        partElement.querySelector('.text')!.textContent = part.text;
                         break;
                     case 'input':
-                        const input = inputTemplate.cloneNode(true)! as HTMLElement;
-                        const codeEditor = input.querySelector('textarea')!;
+                        partElement.innerHTML = inputTemplate;
+                        const codeEditor = partElement.querySelector('textarea')!;
                         // I know izzy won't like this scheme
                         const cachedFragKey = `${challenge.name}-${this.challenge.notebook.indexOf(section)}-${section.indexOf(part)}`;
                         const cachedFrag = localStorage.getItem(cachedFragKey);
@@ -62,20 +58,28 @@ export default class Notebook {
                         let shader: ShaderWrapper;
                         try {
                             shader =
-                                new ShaderWrapper(input.querySelector('canvas')! as HTMLCanvasElement, startingShader);
+                                new ShaderWrapper(
+                                    partElement.querySelector('canvas')! as HTMLCanvasElement,
+                                    startingShader
+                                );
                         } catch (e) {
                             shader =
-                                new ShaderWrapper(input.querySelector('canvas')! as HTMLCanvasElement, defaultShader);
+                                new ShaderWrapper(
+                                    partElement.querySelector('canvas')! as HTMLCanvasElement,
+                                    defaultShader
+                                );
                         }
                         shaders.push(shader);
-                        input.querySelector('.compile')!.addEventListener('click', () =>
-                            shader.updateShader(
-                                this.templateEmbed(lexicon, codeEditor.value)
-                            )
-                        );
-                        sectionElement.appendChild(input);
+                        partElement.querySelector('.compile')!.addEventListener('click', () => {
+                            if (codeEditor.value !== '') {
+                                shader.updateShader(
+                                    this.templateEmbed(lexicon, codeEditor.value)
+                                );
+                            }
+                        });
                         break;
                 }
+                sectionElement.appendChild(partElement);
             }
             content.appendChild(sectionElement);
             this.shaders.push(shaders);
