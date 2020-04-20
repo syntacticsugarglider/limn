@@ -10,16 +10,17 @@ export default class ShaderWrapper {
     public timeUniform: WebGLUniformLocation;
     public resolution: [number, number];
 
+    loaded: boolean;
+
     constructor(canvas: HTMLCanvasElement, rawShader: string) {
+        this.loaded = false;
         this.canvas = canvas;
-        const updateResolution = () => {
-            const newResolution = this.canvas.getBoundingClientRect();
-            this.resolution = [newResolution.width, newResolution.height];
-            this.canvas.width = newResolution.width * SAMPLE_RATIO;
-            this.canvas.height = newResolution.height * SAMPLE_RATIO;
-        };
-        this.canvas.addEventListener('load', updateResolution);
-        window.addEventListener('resize', updateResolution);
+
+        window.addEventListener('resize', () => {
+            if (this.loaded) {
+                this.updateResolution();
+            }
+        });
 
         this.gl = canvas.getContext('webgl')!;
         if (this.gl == null) {
@@ -75,8 +76,24 @@ export default class ShaderWrapper {
         this.gl.enableVertexAttribArray(loc);
         this.resUniform = this.gl.getUniformLocation(this.program, 'res')!;
         this.timeUniform = this.gl.getUniformLocation(this.program, 'time')!;
+    }
 
-        this.draw();
+    public updateResolution() {
+        const newResolution = this.canvas.getBoundingClientRect();
+        if (newResolution.width === 0 || newResolution.height === 0) {
+            return;
+        }
+        this.resolution = [newResolution.width, newResolution.height];
+        this.canvas.width = newResolution.width * SAMPLE_RATIO;
+        this.canvas.height = newResolution.height * SAMPLE_RATIO;
+    }
+
+    public callonload() {
+        if (!this.loaded) {
+            this.loaded = true;
+            this.updateResolution();
+            this.draw();
+        }
     }
 
     public draw() {
