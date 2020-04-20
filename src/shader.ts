@@ -53,9 +53,7 @@ export default class ShaderWrapper {
         this.gl.attachShader(this.program, this.shader);
         this.gl.linkProgram(this.program);
 
-        const vbo = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
-        const vertices = new Uint8Array([
+        const vertices = new Float32Array([
             1,
             -1,
             0,
@@ -69,13 +67,15 @@ export default class ShaderWrapper {
             1,
             0,
         ]);
+        const vbo = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
 
         const loc = this.gl.getAttribLocation(this.program, 'aVertexPosition');
-        this.gl.vertexAttribPointer(loc, 3, this.gl.FLOAT, false, 0, 0);
-        this.gl.enableVertexAttribArray(loc);
         this.resUniform = this.gl.getUniformLocation(this.program, 'res')!;
         this.timeUniform = this.gl.getUniformLocation(this.program, 'time')!;
+        this.gl.vertexAttribPointer(loc, 3, this.gl.FLOAT, false, 0, 0);
+        this.gl.enableVertexAttribArray(loc);
     }
 
     public updateResolution() {
