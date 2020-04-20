@@ -9,7 +9,7 @@ export default class ChallengePage extends Page {
     constructor(app: App, lexicon: ILexicon, challenge: IChallenge) {
         const element = document.createElement('div');
         element.innerHTML = template;
-        const notebook = new Notebook(element, challenge, lexicon);
+        const notebook = new Notebook(element, app, challenge, lexicon);
         super(element);
     }
 }

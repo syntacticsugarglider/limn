@@ -6,6 +6,7 @@ import { IChallenge, INotebookSection } from '../challenges';
 import ShaderWrapper from '../shader';
 import defaultShader from './glsl/default_shader.glsl';
 import shaderTemplate from './glsl/shader_template.glsl';
+import App from '../app';
 
 // I predict izzy will not like this
 export default class Notebook {
@@ -13,12 +14,14 @@ export default class Notebook {
     shaders: ShaderWrapper[][];
     sectionElements: HTMLElement[];
     revealedSections: number;
+    app: App;
 
-    constructor(parentElement: Element, challenge: IChallenge, lexicon: ILexicon) {
+    constructor(parentElement: Element, app: App, challenge: IChallenge, lexicon: ILexicon) {
         this.challenge = challenge;
         this.sectionElements = [];
         this.shaders = [];
         this.revealedSections = 0;
+        this.app = app;
 
         const element = document.createElement('div')!;
         element.innerHTML = template;
@@ -110,12 +113,11 @@ export default class Notebook {
 
     public revealNext() {
         if (this.revealedSections === this.sectionElements.length) {
-            return false;
+            this.app.transition('catalogue');
         }
         this.sectionElements[this.revealedSections].classList.remove('hidden');
         this.shaders[this.revealedSections].forEach((s) => s.callonload());
         ++this.revealedSections;
         localStorage.setItem(`${this.challenge.name}-revealed`, this.revealedSections.toString());
-        return true;
     }
 }
