@@ -18,7 +18,7 @@ export default class ShaderWrapper {
             this.canvas.width = newResolution.width * SAMPLE_RATIO;
             this.canvas.height = newResolution.height * SAMPLE_RATIO;
         };
-        updateResolution();
+        this.canvas.addEventListener('load', updateResolution);
         window.addEventListener('resize', updateResolution);
 
         this.gl = canvas.getContext('webgl')!;
