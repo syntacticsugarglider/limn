@@ -2,6 +2,7 @@ import Catalogue from './catalogue/catalogue';
 import Intro from './intro/intro';
 import ChallengePage from './challenge/challenge_page';
 import content from './content';
+import Cache from './cache';
 
 import Page from './page';
 
@@ -9,10 +10,10 @@ export default class App {
     private page: Page;
 
     constructor() {
-        const page = localStorage.getItem('page');
+        const page = Cache.getPage();
 
         if (!page) {
-            localStorage.setItem('page', 'intro');
+            Cache.setPage('intro');
         }
 
         switch (page) {
@@ -23,7 +24,7 @@ export default class App {
                 this.page = new Intro(this);
                 break;
             case 'challenge':
-                const challengeRaw = localStorage.getItem('challenge');
+                const challengeRaw = Cache.getCurrentChallenge();
                 if (!challengeRaw) {
                     this.transition('catalogue');
                 }
@@ -45,7 +46,7 @@ export default class App {
     }
 
     public transition(target: string) {
-        localStorage.setItem('page', target);
+        Cache.setPage(target);
         window.location.reload();
     }
 }

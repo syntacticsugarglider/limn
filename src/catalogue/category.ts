@@ -1,6 +1,7 @@
 import { ICategory } from '../challenges';
 import template from './category.html';
 import App from '../app';
+import Cache from '../cache';
 
 export default class Category {
     constructor(category: ICategory, parent: Element, idx: number, app: App) {
@@ -32,7 +33,7 @@ export default class Category {
                     }
                 });
                 challengeElement.addEventListener('click', () => {
-                    localStorage.setItem('challenge', challenge.name);
+                    Cache.setCurrentChallenge(challenge.name);
                     app.transition('challenge');
                 });
             }

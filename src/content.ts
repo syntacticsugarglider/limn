@@ -23,6 +23,7 @@ const content: ICategory[] = [
                     },
                     {
                         type: 'input',
+                        id: 0,
                         default_frag: '',
                     }
                 ]

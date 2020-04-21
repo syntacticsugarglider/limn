@@ -2,11 +2,13 @@ import template from './templates/notebook.html';
 import inputTemplate from './templates/notebook_input.html';
 import textTemplate from './templates/notebook_text.html';
 import { ILexicon } from '../lexicon';
-import { IChallenge, INotebookSection } from '../challenges';
+import { IChallenge } from '../challenges';
 import ShaderWrapper from '../shader';
 import defaultShader from './glsl/default_shader.glsl';
 import shaderTemplate from './glsl/shader_template.glsl';
 import App from '../app';
+import Cache from '../cache';
+import { ChallengeCache } from '../cache';
 
 // I predict izzy will not like this
 export default class Notebook {
@@ -15,6 +17,7 @@ export default class Notebook {
     sectionElements: HTMLElement[];
     revealedSections: number;
     app: App;
+    cache: ChallengeCache;
 
     constructor(parentElement: Element, app: App, challenge: IChallenge, lexicon: ILexicon) {
         this.challenge = challenge;
@@ -22,6 +25,7 @@ export default class Notebook {
         this.shaders = [];
         this.revealedSections = 0;
         this.app = app;
+        this.cache = Cache.getChallengeCache(challenge.name);
 
         const element = document.createElement('div')!;
         element.innerHTML = template;
@@ -29,6 +33,8 @@ export default class Notebook {
         const content = element.querySelector('.content')!;
 
         element.querySelector('.revealnext')!.addEventListener('click', () => this.revealNext());
+
+
 
         for (const section of this.challenge.notebook) {
             const sectionElement = document.createElement('div')!;
@@ -45,9 +51,8 @@ export default class Notebook {
                         partElement.innerHTML = inputTemplate;
                         const codeEditor = partElement.querySelector('textarea')!;
                         // I know izzy won't like this scheme
-                        const cachedFragKey = `${challenge.name}-${this.challenge.notebook.indexOf(section)}-${section.indexOf(part)}`;
-                        const cachedFrag = localStorage.getItem(cachedFragKey);
                         let startingShader: string;
+                        const cachedFrag = this.cache.data.savedInput[part.id];
                         if (cachedFrag != null && cachedFrag !== '') {
                             codeEditor.value = cachedFrag;
                             startingShader = this.templateEmbed(lexicon, cachedFrag);
@@ -55,8 +60,10 @@ export default class Notebook {
                             codeEditor.value = part.default_frag;
                             startingShader = defaultShader;
                         }
-                        codeEditor.addEventListener('change', () =>
-                            localStorage.setItem(cachedFragKey, codeEditor.value));
+                        codeEditor.addEventListener('change', () => {
+                            this.cache.data.savedInput[part.id] = codeEditor.value;
+                            this.cache.store();
+                        });
 
                         let shader: ShaderWrapper;
                         try {
@@ -89,9 +96,8 @@ export default class Notebook {
             this.sectionElements.push(sectionElement);
         }
 
-        const cachedRevealed = localStorage.getItem(`${this.challenge.name}-revealed`) ?? '1';
         setTimeout(() => {
-            for (let i = 0; i < Number(cachedRevealed); ++i) {
+            for (let i = 0; i < this.cache.data.revealed; ++i) {
                 this.revealNext();
             }
         }, 0);
@@ -118,6 +124,7 @@ export default class Notebook {
         this.sectionElements[this.revealedSections].classList.remove('hidden');
         this.shaders[this.revealedSections].forEach((s) => s.callonload());
         ++this.revealedSections;
-        localStorage.setItem(`${this.challenge.name}-revealed`, this.revealedSections.toString());
+        this.cache.data.revealed = this.revealedSections;
+        this.cache.store();
     }
 }

@@ -5,6 +5,7 @@ export interface ITextSection {
 
 export interface IInputSection {
     type: 'input';
+    id: number;
     default_frag: string;
 }
 
