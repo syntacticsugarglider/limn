@@ -40,8 +40,6 @@ export default class Notebook {
 
         element.querySelector('.revealnext')!.addEventListener('click', () => this.revealNext(false));
 
-
-
         for (const section of this.challenge.notebook) {
             const sectionElement = document.createElement('div')!;
             const shaders = [];
