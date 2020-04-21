@@ -1,6 +1,7 @@
 import template from './templates/notebook.html';
 import inputTemplate from './templates/notebook_input.html';
 import textTemplate from './templates/notebook_text.html';
+import subpageTemplate from './templates/notebook_subpage.html';
 import { ILexicon } from '../lexicon';
 import { IChallenge } from '../challenges';
 import ShaderWrapper from '../shader';
@@ -10,10 +11,14 @@ import App from '../app';
 import Cache from '../cache';
 import { ChallengeCache } from '../cache';
 
-// I predict izzy will not like this
+export interface IWindows {
+    [details: number]: Window | null;
+}
+
 export default class Notebook {
     challenge: IChallenge;
     shaders: ShaderWrapper[][];
+    windows: IWindows;
     sectionElements: HTMLElement[];
     revealedSections: number;
     app: App;
@@ -23,6 +28,7 @@ export default class Notebook {
         this.challenge = challenge;
         this.sectionElements = [];
         this.shaders = [];
+        this.windows = {};
         this.revealedSections = 0;
         this.app = app;
         this.cache = Cache.getChallengeCache(challenge.name);
@@ -50,7 +56,6 @@ export default class Notebook {
                     case 'input':
                         partElement.innerHTML = inputTemplate;
                         const codeEditor = partElement.querySelector('textarea')!;
-                        // I know izzy won't like this scheme
                         let startingShader: string;
                         const cachedFrag = this.cache.data.savedInput[part.id];
                         if (cachedFrag != null && cachedFrag !== '') {
@@ -65,28 +70,50 @@ export default class Notebook {
                             this.cache.store();
                         });
 
+                        const canvas = partElement.querySelector('canvas')! as HTMLCanvasElement;
                         let shader: ShaderWrapper;
                         try {
                             shader =
                                 new ShaderWrapper(
-                                    partElement.querySelector('canvas')! as HTMLCanvasElement,
+                                   canvas,
                                     startingShader
                                 );
                         } catch (e) {
                             shader =
                                 new ShaderWrapper(
-                                    partElement.querySelector('canvas')! as HTMLCanvasElement,
+                                    canvas,
                                     defaultShader
                                 );
                         }
-                        shaders.push(shader);
                         partElement.querySelector('.compile')!.addEventListener('click', () => {
-                            if (codeEditor.value !== '') {
-                                shader.updateShader(
-                                    this.templateEmbed(lexicon, codeEditor.value)
-                                );
+                            shader.updateShader(
+                                this.templateEmbed(lexicon, codeEditor.value)
+                            );
+                        });
+                        const shaderPortal = partElement.querySelector('.shaderportal')!;
+                        const canvasContainer = partElement.querySelector('.canvascontainer')!;
+                        partElement.querySelector('.changeview')!.addEventListener('click', () => {
+                            const shaderWindow = this.windows[part.id];
+                            if (shaderWindow == null || shaderWindow.closed) {
+                                const newWindow = window.open('', `${challenge.name} ${part.id}`, '');
+                                if (newWindow != null) {
+                                    canvas.remove();
+                                    shaderPortal.classList.add('hidden');
+                                    newWindow.document.body.innerHTML = subpageTemplate;
+                                    newWindow.document.querySelector('.canvascontainer')!.appendChild(canvas);
+                                    newWindow.document.querySelector('.changeview')!.addEventListener('click', () => {
+                                        canvas.remove();
+                                        canvasContainer.appendChild(canvas);
+                                        shaderPortal.classList.remove('hidden');
+                                        newWindow.close();
+                                    });
+                                    this.windows[part.id] = newWindow;
+                                }
+                            } else {
+                                shaderWindow.focus();
                             }
                         });
+                        shaders.push(shader);
                         break;
                 }
                 sectionElement.appendChild(partElement);
@@ -120,9 +147,12 @@ export default class Notebook {
     public revealNext() {
         if (this.revealedSections === this.sectionElements.length) {
             this.app.transition('catalogue');
+            return;
         }
+
         this.sectionElements[this.revealedSections].classList.remove('hidden');
         this.shaders[this.revealedSections].forEach((s) => s.callonload());
+
         ++this.revealedSections;
         this.cache.data.revealed = this.revealedSections;
         this.cache.store();

@@ -23,6 +23,7 @@ export class ChallengeCache {
                 revealed: 1,
             };
         }
+        this.challenge = challenge;
     }
 
     public store() {
@@ -57,7 +58,6 @@ export default class Cache {
     }
 
     public static setPage(page: string) {
-        console.log(PAGE);
         localStorage.setItem(PAGE, page);
     }
 
