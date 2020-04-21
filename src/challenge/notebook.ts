@@ -38,7 +38,7 @@ export default class Notebook {
 
         const content = element.querySelector('.content')!;
 
-        element.querySelector('.revealnext')!.addEventListener('click', () => this.revealNext());
+        element.querySelector('.revealnext')!.addEventListener('click', () => this.revealNext(false));
 
 
 
@@ -125,7 +125,7 @@ export default class Notebook {
 
         setTimeout(() => {
             for (let i = 0; i < this.cache.data.revealed; ++i) {
-                this.revealNext();
+                this.revealNext(true);
             }
         }, 0);
         parentElement.appendChild(element);
@@ -144,9 +144,12 @@ export default class Notebook {
             );
     }
 
-    public revealNext() {
+    public revealNext(setup: boolean) {
         if (this.revealedSections === this.sectionElements.length) {
-            this.app.transition('catalogue');
+            Cache.completeChallenge(this.challenge);
+            if (!setup) {
+                this.app.transition('catalogue');
+            }
             return;
         }
 
@@ -154,7 +157,9 @@ export default class Notebook {
         this.shaders[this.revealedSections].forEach((s) => s.callonload());
 
         ++this.revealedSections;
-        this.cache.data.revealed = this.revealedSections;
-        this.cache.store();
+        if (!setup) {
+            this.cache.data.revealed = this.revealedSections;
+            this.cache.store();
+        }
     }
 }

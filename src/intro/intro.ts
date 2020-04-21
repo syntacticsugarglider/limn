@@ -9,7 +9,7 @@ export default class Catalogue extends Page {
         const element = document.createElement('div');
         element.innerHTML = intro;
         element.querySelector('.begin')?.addEventListener('click', () => {
-            Cache.setChallenges(content);
+            Cache.setContent(content);
             app.transition('catalogue');
         });
         super(element);

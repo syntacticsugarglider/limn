@@ -1,7 +1,7 @@
 import Catalogue from './catalogue/catalogue';
 import Intro from './intro/intro';
 import ChallengePage from './challenge/challenge_page';
-import content from './content';
+import defaultContent from './content';
 import Cache from './cache';
 
 import Page from './page';
@@ -24,11 +24,16 @@ export default class App {
                 this.page = new Intro(this);
                 break;
             case 'challenge':
-                const challengeRaw = Cache.getCurrentChallenge();
+            let content = Cache.getContent();
+            if (content === null) {
+                content = defaultContent;
+            }
+            const challengeRaw = Cache.getCurrentChallenge();
                 if (!challengeRaw) {
                     this.transition('catalogue');
                 }
-                for (const catagory of content) {
+                for (const catagoryName of content.names) {
+                    const catagory = content.content[catagoryName];
                     if (!catagory.available) {
                         continue;
                     }
@@ -40,6 +45,7 @@ export default class App {
                     }
                 }
                 this.transition('catalogue');
+                break;
             default:
                 this.transition('intro');
         }

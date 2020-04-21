@@ -10,12 +10,14 @@ export default class Category {
         element.innerHTML = template;
         element.querySelector('.n')!.textContent = idx.toString();
         element.querySelector('.name')!.textContent = category.name;
+        let activeAssigned = false;
         const items = element.querySelector('.items')!;
         for (const challenge of category.challenges) {
             if (challenge.available) {
                 const challengeElement = document.createElement('div');
                 items.appendChild(challengeElement);
                 if (challenge.active) {
+                    activeAssigned = true;
                     element.querySelector('.num')!.innerHTML = `${idx}<div class="nanim">${challenge.index}</div>`;
                     element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
                     element.querySelector('.description')!.textContent = challenge.short_description;
@@ -23,7 +25,7 @@ export default class Category {
                 } else {
                     challengeElement.innerHTML = `<div class="item">${challenge.index} <div class="check"></div></div>`;
                 }
-                challengeElement.addEventListener('mouseenter', () => {
+                const setBackground = () => {
                     if (!challengeElement.children[0].classList.contains('active')) {
                         element.querySelector('.active')?.classList.remove('active');
                         challengeElement.children[0].classList.add('active');
@@ -31,7 +33,11 @@ export default class Category {
                         element.querySelector('.title.wrapper .title')!.textContent = challenge.name;
                         element.querySelector('.description')!.textContent = challenge.short_description;
                     }
-                });
+                };
+                challengeElement.addEventListener('mouseenter', setBackground);
+                if (challenge === category.challenges[category.challenges.length - 1] && !activeAssigned) {
+                    setBackground();
+                }
                 challengeElement.addEventListener('click', () => {
                     Cache.setCurrentChallenge(challenge.name);
                     app.transition('challenge');
