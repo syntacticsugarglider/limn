@@ -1,7 +1,7 @@
 import Catalogue from './catalogue/catalogue';
 import Intro from './intro/intro';
 import ChallengePage from './challenge/challenge_page';
-import defaultContent from './content';
+import defaultContent from './content/content';
 import Cache from './cache';
 
 import Page from './page';

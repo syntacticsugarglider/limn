@@ -1,5 +1,5 @@
 import App from '../app';
-import content from '../content';
+import content from '../content/content';
 import Page from '../page';
 import intro from './intro.html';
 import Cache from '../cache';
