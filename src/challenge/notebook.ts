@@ -128,8 +128,9 @@ export default class Notebook {
 
         element.querySelectorAll('textarea').forEach((e) => {
             const resize = () => {
+                const max = e.getBoundingClientRect().height;
                 e.style.height = '';
-                e.style.height = `${e.scrollHeight}px`;
+                e.style.height = `${Math.max(e.scrollHeight, max)}px`;
             };
             e.addEventListener('input', resize);
             setTimeout(resize, 100); // TODO: I can't figure out how to do this properly?
