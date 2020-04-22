@@ -88,6 +88,7 @@ export default class Notebook {
                                 this.templateEmbed(lexicon, codeEditor.value)
                             );
                         });
+
                         const shaderPortal = partElement.querySelector('.shaderportal')!;
                         const canvasContainer = partElement.querySelector('.canvascontainer')!;
                         partElement.querySelector('.changeview')!.addEventListener('click', () => {
@@ -124,6 +125,15 @@ export default class Notebook {
             this.shaders.push(shaders);
             this.sectionElements.push(sectionElement);
         }
+
+        element.querySelectorAll('textarea').forEach((e) => {
+            const resize = () => {
+                e.style.height = '';
+                e.style.height = `${e.scrollHeight}px`;
+            };
+            e.addEventListener('input', resize);
+            setTimeout(resize, 100); // TODO: I can't figure out how to do this properly?
+        });
 
         setTimeout(() => {
             for (let i = 0; i < this.cache.data.revealed; ++i) {
