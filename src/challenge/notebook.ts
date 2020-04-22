@@ -93,18 +93,22 @@ export default class Notebook {
                         partElement.querySelector('.changeview')!.addEventListener('click', () => {
                             const shaderWindow = this.windows[part.id];
                             if (shaderWindow == null || shaderWindow.closed) {
-                                const newWindow = window.open('', `${challenge.name} ${part.id}`, '');
+                                const newWindow = window.open('', `${challenge.name} ${part.id}`, 'channelmode=yes');
                                 if (newWindow != null) {
                                     canvas.remove();
                                     shaderPortal.classList.add('hidden');
                                     newWindow.document.body.innerHTML = subpageTemplate;
                                     newWindow.document.querySelector('.canvascontainer')!.appendChild(canvas);
-                                    newWindow.document.querySelector('.changeview')!.addEventListener('click', () => {
+                                    const closePopout = () => {
                                         canvas.remove();
                                         canvasContainer.appendChild(canvas);
                                         shaderPortal.classList.remove('hidden');
                                         newWindow.close();
-                                    });
+                                    };
+                                    newWindow.document
+                                        .querySelector('.changeview')!
+                                        .addEventListener('click', closePopout);
+                                    newWindow.addEventListener('close', closePopout);
                                     this.windows[part.id] = newWindow;
                                 }
                             } else {
