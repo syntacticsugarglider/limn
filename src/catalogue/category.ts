@@ -1,7 +1,7 @@
-import { ICategory } from '../challenges';
-import template from './category.html';
 import App from '../app';
 import Cache from '../cache';
+import { ICategory } from '../challenges';
+import template from './category.html';
 
 export default class Category {
     constructor(category: ICategory, parent: Element, idx: number, app: App) {

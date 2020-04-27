@@ -10,7 +10,7 @@ export default class ShaderWrapper {
     public timeUniform: WebGLUniformLocation;
     public resolution: [number, number];
 
-    loaded: boolean;
+    private loaded: boolean;
 
     constructor(canvas: HTMLCanvasElement, rawShader: string) {
         this.loaded = false;

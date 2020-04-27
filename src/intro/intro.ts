@@ -1,8 +1,8 @@
 import App from '../app';
+import Cache from '../cache';
 import content from '../content/content';
 import Page from '../page';
 import intro from './intro.html';
-import Cache from '../cache';
 
 export default class Catalogue extends Page {
     constructor(app: App) {

@@ -1,9 +1,9 @@
+import App from '../app';
 import { IChallenge } from '../challenges';
 import { ILexicon } from '../lexicon';
-import Notebook from './notebook';
-import App from '../app';
-import template from './templates/challenge_page.html';
 import Page from '../page';
+import Notebook from './notebook';
+import template from './templates/challenge_page.html';
 
 export default class ChallengePage extends Page {
     constructor(app: App, lexicon: ILexicon, challenge: IChallenge) {

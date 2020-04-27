@@ -1,28 +1,28 @@
-import template from './templates/notebook.html';
-import inputTemplate from './templates/notebook_input.html';
-import textTemplate from './templates/notebook_text.html';
-import subpageTemplate from './templates/notebook_subpage.html';
-import { ILexicon } from '../lexicon';
-import { IChallenge } from '../challenges';
-import ShaderWrapper from '../shader';
-import defaultShader from './glsl/default_shader.glsl';
-import shaderTemplate from './glsl/shader_template.glsl';
 import App from '../app';
 import Cache from '../cache';
 import { ChallengeCache } from '../cache';
+import { IChallenge } from '../challenges';
+import { ILexicon } from '../lexicon';
+import ShaderWrapper from '../shader';
+import defaultShader from './glsl/default_shader.glsl';
+import shaderTemplate from './glsl/shader_template.glsl';
+import template from './templates/notebook.html';
+import inputTemplate from './templates/notebook_input.html';
+import subpageTemplate from './templates/notebook_subpage.html';
+import textTemplate from './templates/notebook_text.html';
 
 export interface IWindows {
     [details: number]: Window | null;
 }
 
 export default class Notebook {
-    challenge: IChallenge;
-    shaders: ShaderWrapper[][];
-    windows: IWindows;
-    sectionElements: HTMLElement[];
-    revealedSections: number;
-    app: App;
-    cache: ChallengeCache;
+    private challenge: IChallenge;
+    private shaders: ShaderWrapper[][];
+    private windows: IWindows;
+    private sectionElements: HTMLElement[];
+    private revealedSections: number;
+    private app: App;
+    private cache: ChallengeCache;
 
     constructor(parentElement: Element, app: App, challenge: IChallenge, lexicon: ILexicon) {
         this.challenge = challenge;
@@ -73,19 +73,19 @@ export default class Notebook {
                         try {
                             shader =
                                 new ShaderWrapper(
-                                   canvas,
-                                    startingShader
+                                    canvas,
+                                    startingShader,
                                 );
                         } catch (e) {
                             shader =
                                 new ShaderWrapper(
                                     canvas,
-                                    defaultShader
+                                    defaultShader,
                                 );
                         }
                         partElement.querySelector('.compile')!.addEventListener('click', () => {
                             shader.updateShader(
-                                this.templateEmbed(lexicon, codeEditor.value)
+                                this.templateEmbed(lexicon, codeEditor.value),
                             );
                         });
 
@@ -149,11 +149,11 @@ export default class Notebook {
             .replace(
                 'LEXICON GOES HERE', lexicon.procedures.map((proc) => proc.body).reduce(
                     (prev, current) => prev + '\n' + current,
-                    ''
-                )
+                    '',
+                ),
             )
             .replace(
-                'STUFF GOES HERE', embed
+                'STUFF GOES HERE', embed,
             );
     }
 

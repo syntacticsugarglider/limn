@@ -19,7 +19,7 @@ export interface IChallenge {
     available: boolean;
     active: boolean;
     next_challenges: number[];
-    next_catagories: string[];
+    next_categories: string[];
     notebook: INotebookSection[][];
 }
 

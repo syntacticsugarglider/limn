@@ -1,9 +1,9 @@
 import App from '../app';
+import Cache from '../cache';
 import { ICategory, IChallenge } from '../challenges';
 import Page from '../page';
 import catalogue from './catalogue.html';
 import Category from './category';
-import Cache from '../cache';
 
 export default class Catalogue extends Page {
     constructor(app: App) {

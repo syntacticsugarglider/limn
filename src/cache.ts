@@ -1,4 +1,4 @@
-import { IContent, IChallenge } from './challenges';
+import { IChallenge, IContent } from './challenges';
 
 export interface IHash {
     [details: number]: string | null;
@@ -19,8 +19,8 @@ export class ChallengeCache {
             this.data = JSON.parse(raw) as IChallengeCache;
         } else {
             this.data = {
-                savedInput: {},
                 revealed: 1,
+                savedInput: {},
             };
         }
         this.challenge = challenge;
@@ -55,7 +55,7 @@ export default class Cache {
             unlockedChallenge.available = true;
             unlockedChallenge.active = true;
         }
-        for (const unlockedCategoryName of challenge.next_catagories) {
+        for (const unlockedCategoryName of challenge.next_categories) {
             content[unlockedCategoryName].available = true;
         }
         this.setContent(rawContent);
