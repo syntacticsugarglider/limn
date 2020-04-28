@@ -107,19 +107,19 @@ export default class ShaderWrapper {
         window.requestAnimationFrame(this.draw.bind(this));
     }
 
-    public updateShader(newShaderText: string) {
+    public updateShader(newShaderText: string): string | null {
         this.gl.detachShader(this.program, this.shader);
         const newShader = this.gl.createShader(this.gl.FRAGMENT_SHADER)!;
         this.gl.shaderSource(newShader, newShaderText);
         this.gl.compileShader(newShader);
         if (!this.gl.getShaderParameter(newShader, this.gl.COMPILE_STATUS)) {
-            window.alert(this.gl.getShaderInfoLog(newShader));
-            return;
+            return this.gl.getShaderInfoLog(newShader);
         }
         this.gl.attachShader(this.program, newShader);
         this.gl.linkProgram(this.program);
         this.resUniform = this.gl.getUniformLocation(this.program, 'res')!;
         this.timeUniform = this.gl.getUniformLocation(this.program, 'time')!;
         this.shader = newShader;
+        return null;
     }
 }

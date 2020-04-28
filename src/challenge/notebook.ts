@@ -11,6 +11,27 @@ import inputTemplate from './templates/notebook_input.html';
 import subpageTemplate from './templates/notebook_subpage.html';
 import textTemplate from './templates/notebook_text.html';
 
+import { CodeJar } from '@medv/codejar';
+
+import * as Prism from 'prismjs';
+import 'prismjs/components/prism-glsl.js';
+
+interface IOptions {
+    tab: string;
+}
+
+String.prototype.trim = function () {
+    return this.replace(/\n$/g, '');
+};
+
+interface ICodeJar {
+    updateOptions(options: Partial<IOptions>): void;
+    updateCode(code: string): void;
+    onUpdate(cb: (code: string) => void): void;
+    destroy(): void;
+    toString(): string;
+}
+
 export interface IWindows {
     [details: number]: Window | null;
 }
@@ -53,21 +74,36 @@ export default class Notebook {
                         break;
                     case 'input':
                         partElement.innerHTML = inputTemplate;
-                        const codeEditor = partElement.querySelector('textarea')!;
-                        let startingShader: string;
+                        const lineNumbers = partElement.querySelector('.line-numbers')!;
                         const cachedFrag = this.cache.data.savedInput[part.id];
+                        let initFrag: string;
                         if (cachedFrag != null && cachedFrag !== '') {
-                            codeEditor.value = cachedFrag;
+                            initFrag = cachedFrag;
+                        } else {
+                            initFrag = part.default_frag;
+                        }
+                        const codeEditor: ICodeJar =
+                            CodeJar(partElement.querySelector('#editor')! as HTMLElement, (el) => {
+                                const linesCount =
+                                    ((codeEditor?.toString().trim()
+                                        || initFrag.trim()).match(/\n/g) || '').length + 1;
+                                lineNumbers.innerHTML = '';
+                                Array(linesCount).fill(0).forEach((_, idx) => {
+                                    const elem = document.createElement('div');
+                                    elem.classList.add('linenum');
+                                    elem.textContent = (idx + 1).toString();
+                                    lineNumbers.appendChild(elem);
+                                });
+                                Prism.highlightElement(el);
+                            }, { tab: ' '.repeat(4) });
+                        let startingShader: string;
+                        if (cachedFrag != null && cachedFrag !== '') {
+                            codeEditor.updateCode(cachedFrag);
                             startingShader = this.templateEmbed(lexicon, cachedFrag);
                         } else {
-                            codeEditor.value = part.default_frag;
+                            codeEditor.updateCode(part.default_frag);
                             startingShader = defaultShader;
                         }
-                        codeEditor.addEventListener('change', () => {
-                            this.cache.data.savedInput[part.id] = codeEditor.value;
-                            this.cache.store();
-                        });
-
                         const canvas = partElement.querySelector('canvas')! as HTMLCanvasElement;
                         let shader: ShaderWrapper;
                         try {
@@ -83,13 +119,23 @@ export default class Notebook {
                                     defaultShader,
                                 );
                         }
-                        partElement.querySelector('.compile')!.addEventListener('click', () => {
-                            shader.updateShader(
-                                this.templateEmbed(lexicon, codeEditor.value),
+
+                        codeEditor.onUpdate((code) => {
+                            const errors = shader.updateShader(
+                                this.templateEmbed(lexicon, code),
                             );
+                            if (errors) {
+                                // TODO error handling
+
+                                // for (const error of errors.trim().split('\n')) {
+                                //     const error_terms = error.split(':');
+                                //     console.log(error_terms);
+                                // }
+                            }
+                            this.cache.data.savedInput[part.id] = code;
+                            this.cache.store();
                         });
 
-                        const shaderPortal = partElement.querySelector('.shaderportal')!;
                         const canvasContainer = partElement.querySelector('.canvascontainer')!;
                         partElement.querySelector('.changeview')!.addEventListener('click', () => {
                             const shaderWindow = this.windows[part.id];
@@ -97,19 +143,19 @@ export default class Notebook {
                                 const newWindow = window.open('', `${challenge.name} ${part.id}`, 'channelmode=yes');
                                 if (newWindow != null) {
                                     canvas.remove();
-                                    shaderPortal.classList.add('hidden');
+                                    canvasContainer.classList.add('hidden');
                                     newWindow.document.body.innerHTML = subpageTemplate;
                                     newWindow.document.querySelector('.canvascontainer')!.appendChild(canvas);
                                     const closePopout = () => {
                                         canvas.remove();
                                         canvasContainer.appendChild(canvas);
-                                        shaderPortal.classList.remove('hidden');
+                                        canvasContainer.classList.remove('hidden');
                                         newWindow.close();
                                     };
                                     newWindow.document
                                         .querySelector('.changeview')!
                                         .addEventListener('click', closePopout);
-                                    newWindow.addEventListener('close', closePopout);
+                                    newWindow.addEventListener('unload', closePopout);
                                     this.windows[part.id] = newWindow;
                                 }
                             } else {
