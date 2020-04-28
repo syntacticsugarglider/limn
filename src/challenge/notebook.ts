@@ -59,8 +59,6 @@ export default class Notebook {
 
         const content = element.querySelector('.content')!;
 
-        element.querySelector('.revealnext')!.addEventListener('click', () => this.revealNext(false));
-
         for (const section of this.challenge.notebook) {
             const sectionElement = document.createElement('div')!;
             const shaders = [];
@@ -74,6 +72,7 @@ export default class Notebook {
                         break;
                     case 'input':
                         partElement.innerHTML = inputTemplate;
+                        partElement.querySelector('.continue')!.addEventListener('click', () => this.revealNext(false));
                         const lineNumbers = partElement.querySelector('.line-numbers')!;
                         const cachedFrag = this.cache.data.savedInput[part.id];
                         let initFrag: string;
