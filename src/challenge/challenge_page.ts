@@ -9,7 +9,7 @@ export default class ChallengePage extends Page {
     constructor(app: App, lexicon: ILexicon, challenge: IChallenge) {
         const element = document.createElement('div');
         element.innerHTML = template;
-        element.querySelector('.cataloguenav')!.addEventListener('click', () => app.transition('catalogue'));
+        element.querySelector('.menubutton')!.addEventListener('click', () => app.transition('catalogue'));
         const notebook = new Notebook(element.querySelector('.content')!, app, challenge, lexicon);
         super(element);
     }
