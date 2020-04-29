@@ -145,10 +145,16 @@ export default class Notebook {
                                     canvasContainer.classList.add('hidden');
                                     newWindow.document.body.innerHTML = subpageTemplate;
                                     newWindow.document.querySelector('.canvascontainer')!.appendChild(canvas);
+                                    setTimeout(() => {
+                                        shader.updateListener(newWindow);
+                                    }, 0);
                                     const closePopout = () => {
                                         canvas.remove();
                                         canvasContainer.appendChild(canvas);
                                         canvasContainer.classList.remove('hidden');
+                                        setTimeout(() => {
+                                            shader.updateListener(window);
+                                        }, 0);
                                         newWindow.close();
                                     };
                                     newWindow.document
@@ -170,16 +176,6 @@ export default class Notebook {
             this.shaders.push(shaders);
             this.sectionElements.push(sectionElement);
         }
-
-        element.querySelectorAll('textarea').forEach((e) => {
-            const resize = () => {
-                const max = e.getBoundingClientRect().height;
-                e.style.height = '';
-                e.style.height = `${Math.max(e.scrollHeight, max)}px`;
-            };
-            e.addEventListener('input', resize);
-            setTimeout(resize, 100); // TODO: I can't figure out how to do this properly?
-        });
 
         setTimeout(() => {
             for (let i = 0; i < this.cache.data.revealed; ++i) {

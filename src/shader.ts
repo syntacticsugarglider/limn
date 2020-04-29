@@ -17,9 +17,11 @@ export default class ShaderWrapper {
         this.canvas = canvas;
 
         window.addEventListener('resize', () => {
-            if (this.loaded) {
-                this.updateResolution();
-            }
+            setTimeout(() => {
+                if (this.loaded) {
+                    this.updateResolution();
+                }
+            }, 0);
         });
 
         this.gl = canvas.getContext('webgl')!;
@@ -96,7 +98,7 @@ export default class ShaderWrapper {
         }
     }
 
-    public draw() {
+    public refresh() {
         const viewportSize = [this.resolution[0] * SAMPLE_RATIO, this.resolution[1] * SAMPLE_RATIO];
         this.gl.viewport(0, 0, viewportSize[0], viewportSize[1]);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
@@ -104,6 +106,10 @@ export default class ShaderWrapper {
         this.gl.uniform2f(this.resUniform, viewportSize[0], viewportSize[1]);
         this.gl.uniform1f(this.timeUniform, new Date().getSeconds());
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    public draw() {
+        this.refresh();
         window.requestAnimationFrame(this.draw.bind(this));
     }
 
@@ -121,5 +127,17 @@ export default class ShaderWrapper {
         this.timeUniform = this.gl.getUniformLocation(this.program, 'time')!;
         this.shader = newShader;
         return null;
+    }
+
+    public updateListener(w: Window): void {
+        this.updateResolution();
+        this.refresh();
+        w.addEventListener('resize', () => {
+            setTimeout(() => {
+                if (this.loaded) {
+                    this.updateResolution();
+                }
+            }, 0);
+        });
     }
 }
