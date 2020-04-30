@@ -16,10 +16,15 @@ const basicPrimitives: ICategory = {
                     text: 'This is section 1 of the notebookbookbookbookbookbookbookbook',
                     type: 'text',
                 },
+                {
+                    default_frag: '',
+                    id: -1,
+                    type: 'input',
+                }
             ],
             [
                 {
-                    text: 'this section will have input',
+                    text: 'this section will have more input',
                     type: 'text',
                 },
                 {
